@@ -44,7 +44,7 @@ jobs:
   tag_release:
     needs: [simple_deployment_pipeline]
     runs-on: ubuntu-20.04
-    if: ${{ github.event_name == 'push' }}
+    if: ${{ github.event_name == 'push' && !(contains(github.event.head_commit.message, '#skip')) }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -59,3 +59,23 @@ jobs:
           PRERELEASE_SUFFIX: dev
           PRERELEASE: true
           INITIAL_VERSION: 1.0.0
+  a_test_job:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - name: github context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+      - name: commits
+        env:
+          COMMITS: ${{ toJson(github.event.commits) }}
+        run: echo "$COMMITS"
+      - name: commit messages
+        env:
+          COMMIT_MESSAGES: ${{ toJson(github.event.commits.*.message) }}
+        run: echo "$COMMIT_MESSAGES"
+      - name: head commit
+        env:
+          HEAD_COMMIT: ${{ toJson(github.event.head_commit.message) }}
+        run: echo "$HEAD_COMMIT"
