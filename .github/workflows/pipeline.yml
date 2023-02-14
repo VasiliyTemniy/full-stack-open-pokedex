@@ -47,7 +47,8 @@ jobs:
     if: ${{ github.event_name == 'push' }}
     steps:
       - name: Bump version and push tag
-        uses: anothrNick/github-tag-action@1.36.0
+        uses: anothrNick/github-tag-action@1.61.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO_OWNER: VasiliyTemniy
           DEFAULT_BUMP: patch
