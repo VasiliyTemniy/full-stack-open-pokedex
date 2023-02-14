@@ -29,5 +29,3 @@ app.get('/health', (req, res) => {
 app.get('/version', (req, res) => {
   res.send('1.1')
 })
-
-//check if deploy ping is sent with pull request or only after merge with master branch
