@@ -31,6 +31,14 @@ jobs:
           command: npm run test:e2e
           start: npm run start-prod
           wait-on: http://localhost:5000
+      - name: Test Failure
+        uses: rjstone/discord-webhook-notify@v1
+        if: ${{ failure() }}
+        with:
+          severity: error
+          description: For details, see pull request ${{ github.event.pull_request._links.html.href }}
+          text: Build failed
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
       - name: deploy_app
         run: |
           if [[ ${{ github.event_name }} == 'push' ]]; then
@@ -59,3 +67,16 @@ jobs:
           PRERELEASE_SUFFIX: dev
           PRERELEASE: true
           INITIAL_VERSION: 1.0.0
+  deploy_notification:
+    needs: [simple_deployment_pipeline]
+    runs-on: ubuntu-20.04
+    environment: render_deploy
+    if: ${{ github.event_name == 'push' && success() }}
+    steps:
+      - name: Deploy success notification
+        uses: rjstone/discord-webhook-notify@v1
+        with:
+          severity: info
+          description: to https://pokedex-geaj.onrender.com/ by ${{ github.event.head_commit.author.username }}
+          text: A new version of Pokedex deployed
+          webhookUrl: ${{ secrets.DISCORD_WEBHOOK }}
